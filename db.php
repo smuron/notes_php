@@ -2,6 +2,8 @@
 
 	// parts from/based on https://github.com/erangalp/database-tutorial under MIT license
 
+	// summary: we want a singleton db object to use in our source, so we don't spam connections
+	// helper functions to get us basic query / query and return list functionality, also error/quoting
 	class Db {
 		protected static $mysqli;
 

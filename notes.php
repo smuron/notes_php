@@ -16,13 +16,14 @@ if (isset($request->title)) {
 	$note->save();
 
 	echo('{"success":"true"}');
-} else if ($_GET['endpoint'] == 'list') {
+} else if ($_GET['endpoint'] == 'list') { // not using $request-> on GET method
 	$output = Note::getList('Default');
 
 	$json_out = json_encode($output, JSON_FORCE_OBJECT);
 
 	echo($json_out);
 } else {
+	// log info if needed
 	
 	// catch all, meh
 	echo('{"success":"false","error":"bad endpoint or data"}');

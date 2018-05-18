@@ -2,12 +2,19 @@
 
 include './db.php';
 
+
+// could probably go in a helper file
+// makes sure a string is a string and has a (unicode length) of at least 1.
+// probably generalize this to $s, $minLength, $maxLength or what have you.
 function simpleStringValidate($s) {
 	return (is_string($s) && mb_strlen($s) >= 1);
 }
 
 $db = new Db();
 
+// class representing a Note, from the db.
+// not sure exactly the best way of implementing - i'm sure frameworks do this in a more sensible way
+// JsonSerializable makes it so we can just run json_encode on an array and return data
 class Note implements \JsonSerializable {
 	protected $title;
 	protected $ownerName;
@@ -43,24 +50,27 @@ class Note implements \JsonSerializable {
 		return $this->id;
 	}
 
+	// N.B.
+	// i did a lot of on-the-fly just dumping debug into the output here, I'm sure you'd be 
+	// better off using a log file or some such
 	public function validate() {
 		// title should not be empty / null
 		if (!simpleStringValidate($this->title)) {
-			echo('title');
-			echo($this->title);
-			echo('is_str'.is_string($this->title));
-			echo('str_len'.strlen($this->title));
+			//echo('title');
+			//echo($this->title);
+			//echo('is_str'.is_string($this->title));
+			//echo('str_len'.strlen($this->title));
 			return false;
 		}
 		// should have owner
 		if (!simpleStringValidate($this->ownerName)) {
-			echo('ownerName');
+			//echo('ownerName');
 			return false;
 		}
 		// should have contents
-		// if (!simpleStringValidate($this->owner)) {
-		//	return false;
-		//}
+		if (!simpleStringValidate($this->contents)) {
+			return false;
+		}
 
 		// check to see reminder is correct format or not there
 		if ($this->reminder === '') {
@@ -70,15 +80,19 @@ class Note implements \JsonSerializable {
 		return true;
 	}
 
+	// get a list of Note objects for $ownerName
 	public static function getList($ownerName) {
 		global $db; // probably bad?
 
 		// pagination, filtering, etc.
 
 		// apparently large queries with fetch_object are bad
+
+		// properly quote the ownerName to put into a query
 		$ownerName = $db->quote($ownerName);
 
 		// TODO: modify results as needed
+		// we're just providing a raw query here, there's possibly a less hands-on way to approach this
 		return $db->query_list("SELECT id, title, ownerName, contents, reminder, created, updated FROM Note WHERE ownerName = ${ownerName}", '\Notes\Note');
 	}
 

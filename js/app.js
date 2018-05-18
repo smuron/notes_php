@@ -1,7 +1,8 @@
 var notesModule = angular.module('notes', []);
 
-var BASE_URL = '/hello';
+var BASE_URL = '/hello'; // e.g.
 
+// e.g. one controller app, but could easily split the editor into its own, and keep data cached in the api service
 notesModule.controller('NotesListController', ['$scope', 'notesApi', function NotesListController($scope, notesApi) {
 	$scope.notesList = {null: {
 		id: null,
